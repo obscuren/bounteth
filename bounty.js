@@ -22,6 +22,18 @@ if (Meteor.isClient) {
 
             BountyProgram.submitBounty.sendTransaction(event.target.issueNumber.value, {from:web3.eth.accounts[0], value: event.target.amount.value, gas: 1500000});
         },
+
+        "submit .claim-bounty": function(event) {
+            event.preventDefault();
+
+            BountyProgram.claimBounty.sendTransaction(event.target.issueNumber.value, {from:web3.eth.accounts[0], value: web3.toWei(10, "ether"), gas: 1500000});
+        },
+
+        "submit .review-claim": function(event) {
+            event.preventDefault();
+
+            BountyProgram.reviewClaim.sendTransaction(event.target.issueNumber.value, event.target.approve.value, {from:web3.eth.accounts[0], gas: 1500000});
+        },
     });
 
     var newBountyFilter = BountyProgram.NewBounty({}, {fromBlock:0, toBlock:"latest"});

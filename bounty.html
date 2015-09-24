@@ -8,7 +8,24 @@
           <label>Submit bounty</label>
           <input type="text" name="issueNumber" placeholder="issue number">
           <input type="text" name="amount" placeholder="1234">
-          <input type="submit" value="Submit">
+          <input type="submit" value="Submit" style="width:100px">
+      </form>
+
+      <form class="claim-bounty">
+          <label>Claim bounty</label>
+          <input type="text" name="issueNumber" placeholder="issue number">
+          <label>+ 10 ETH deposit</label>
+          <input type="submit" value="Submit" style="width: 100px">
+      </form>
+
+      <form class="review-claim">
+          <label>Review claim</label>
+          <input type="text" name="issueNumber" placeholder="issue number">
+          <select name="approve">
+              <option value="1">Approve</option>
+              <option value="0">Disapprove</option>
+          </select>
+          <input type="submit" value="Submit" style="width: 100px">
       </form>
 
       <header>
