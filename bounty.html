@@ -1,0 +1,64 @@
+<head>
+  <title>bounty</title>
+</head>
+
+<body>
+  <div class="container">
+      <form class="new-bounty">
+          <label>Submit bounty</label>
+          <input type="text" name="issueNumber" placeholder="issue number">
+          <input type="text" name="amount" placeholder="1234">
+          <input type="submit" value="Submit">
+      </form>
+
+      <header>
+          <h1>Open Bounties</h1>
+      </header>
+
+      <table>
+          <tr>
+              <th>Issue number</th>
+              <th>Title</th>
+              <th>Bounty</th>
+              <th>Claimer</th>
+              <th>Reviews</th>
+          </tr>
+          {{#each bounties}}
+            {{> bounty}}
+          {{/each}}
+      </table>
+    </div>
+
+  <div class="container">
+      <header>
+          <h1>Closed Bounties</h1>
+      </header>
+
+      <table>
+          <tr>
+              <th>Issue number</th>
+              <th>Title</th>
+              <th>Bounty</th>
+              <th>Claimer</th>
+              <th>Reviews</th>
+          </tr>
+          {{#each closedBounties}}
+            {{> bounty}}
+          {{/each}}
+      </table>
+    </div>
+</body>
+
+<template name="bounty">
+<tr>
+    <td>{{id}}</td>
+    <td><a href="https://github.com/ethereum/go-ethereum/issues/{{id}}">{{title}}</a></td>
+    <td>{{bounty.amount}} wei</td>
+    <td>{{claimer}}</td>
+    <td>{{reviews}}</td>
+</tr>
+</template>
+
+<template name="account">
+    <option value="{{account}}">{{account}}</option>
+</template>
