@@ -14,6 +14,9 @@ if (Meteor.isClient) {
         accounts: function() {
             return web3.eth.accounts;
         },
+        operator: function() {
+            return BountyProgram.operator();
+        },
     });
 
     Template.body.events({
@@ -33,6 +36,12 @@ if (Meteor.isClient) {
             event.preventDefault();
 
             BountyProgram.reviewClaim.sendTransaction(event.target.issueNumber.value, event.target.approve.value, {from:web3.eth.accounts[0], gas: 1500000});
+        },
+
+        "submit .add-reviewer": function(event) {
+            event.preventDefault();
+
+            BountyProgram.addReviewer.sendTransaction(event.target.address.value, {from:web3.eth.accounts[0], gas: 1500000});
         },
     });
 

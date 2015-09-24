@@ -1,5 +1,5 @@
 contract Tracker {
-    address operator;
+    address public operator;
     mapping(uint => Bounty) bounties;
     mapping(uint => bool) bountyAvailable;
     mapping(address => bool) public isReviewer;
