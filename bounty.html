@@ -3,6 +3,20 @@
 </head>
 
 <body>
+  <div class="debug">
+      <div><strong>Debug:</strong></div>
+      <table style="text-align: left">
+          <tr>
+              <th>DApp location</th>
+              <th>Contract balance</th>
+          </tr>
+
+          <tr>
+              <td>{{bountyAddress}}</td>
+              <td>{{bountyBalance}}</td>
+          </tr>
+       </table>
+  </div>
   <div class="container">
       <form class="new-bounty">
           <label>Submit bounty</label>
@@ -68,7 +82,7 @@
       <form class="add-reviewer">
           <label>Add reviewer</label>
           <input type="text" name="address">
-          (can only be done by {{operator}})
+          (can only be done by <strong>{{operator}}</strong>)
           <input type="submit" value="Submit" style="width: 100px">
       </form>
 </body>
