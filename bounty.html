@@ -22,6 +22,7 @@
       <form class="new-bounty">
           <label>Submit bounty</label>
           <input type="text" name="issueNumber" placeholder="issue number">
+          <input type="text" name="validTill" placeholder="valid till (0 = no expire time)">
           <input type="text" name="amount" placeholder="1234">
           <input type="submit" value="Submit" style="width:100px">
       </form>
@@ -52,6 +53,7 @@
               <th>Issue number</th>
               <th>Title</th>
               <th>Bounty</th>
+              <th>Valid till</th>
               <th>Claimer</th>
               <th>Reviews</th>
           </tr>
@@ -93,6 +95,7 @@
     <td>{{id}}</td>
     <td><a href="https://github.com/ethereum/go-ethereum/issues/{{id}}">{{title}}</a></td>
     <td>{{bounty.amount}} wei</td>
+    <td>{{bounty.validTill}}</td>
     <td>{{claimer}}</td>
     <td>{{reviews}}</td>
 </tr>

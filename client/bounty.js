@@ -1,11 +1,12 @@
 Bounties = new Mongo.Collection("bounties", {connection: null});
+Bounties.remove({});
 new PersistentMinimongo(Bounties, "ethereum_bounties-dapp");
 
-contractAddress = "0x5e8a03575a828396e080f31a7ecf4dad3c4f5501";
+contractAddress = "0x0724096a7ea283ec0256a7aa5b7537899a0a68fe";
 BountyProgram = TrackerContract.at(contractAddress);
 
 Meteor.startup(function() {
-    var newBountyFilter = BountyProgram.NewBounty({}, {fromBlock:0, toBlock:"latest"});
+    var newBountyFilter = BountyProgram.NewBounty();
     newBountyFilter.watch(function(error, res) {
         console.log("NewBounty", res);
 
@@ -45,6 +46,21 @@ Meteor.startup(function() {
         Bounties.update({id: id}, {
             $set: { bounty: bounty }
         });
+    });
+
+    // UPDATE BOUNTY
+    var deleteBountyFilter = BountyProgram.DeletedBounty();
+    deleteBountyFilter.watch(function(error, res) {
+        console.log("DeletedBounty", res);
+
+        if( error ) {
+            console.log(error);
+            return;
+        }
+
+        var bounty = res.args;
+        var id = bounty.number.toString();
+        Bounties.remove({id: id});
     });
 
     // CLAIMING

@@ -1,7 +1,7 @@
 contract Tracker {
     address public operator;
     mapping(uint => Bounty) bounties;
-    mapping(uint => bool) bountyAvailable;
+    mapping(uint => bool) public bountyAvailable;
     mapping(address => bool) public isReviewer;
 
     // addReviewer adds a reviewer to the list of reviewers. This can only
@@ -9,6 +9,12 @@ contract Tracker {
     function addReviewer(address reviewer) {
         if( msg.sender != operator || isReviewer[reviewer]) return;
         isReviewer[reviewer] = true;
+    }
+
+    // removeReviewer removes a reviewer from the list of reviewers.
+    function removeReviewer(address reviewer) {
+        if( msg.sender != operator || isReviewer[reviewer]) return;
+        delete isReviewer[reviewer];
     }
     
     // Claim is an object assigned to bounties whenever a user
@@ -28,6 +34,8 @@ contract Tracker {
     
     // Bounty is a bounty submission
     struct Bounty {
+        // valid till (0 = inf)
+        uint validTill;
         // creator of the bounty
         address creator;
         // amount of wei to claim for resolving the bounty
@@ -37,9 +45,11 @@ contract Tracker {
     }
     
     // Fired as new bounties are being created.
-    event NewBounty(uint number, address creator, uint value);
+    event NewBounty(uint number, address creator, uint validTill, uint value);
     // Fired when a bounty's value has changed.
     event ChangedBounty(uint indexed number, address mod, uint value);
+    // Fired when a bounty has expired or removed
+    event DeletedBounty(uint indexed number);
     // Fired when a bounty has been claimed (but not paid out).
     event ClaimBounty(uint indexed number, address claimer);
     // Fired when a bounty claim was successfull.
@@ -58,29 +68,65 @@ contract Tracker {
         isReviewer[0x9df9878ae7b4f5133efea173733d16fc6ea5dde3] = true;
         isReviewer[0xc3fac3cc4feed25b6b4b258cdd57c5ce208d34dc] = true;
     }
+
+    // refundBounty refunds the bounty back to the creator of the bounty
+    function refundBounty(Bounty bounty) internal {
+        bounty.creator.send(bounty.value);
+    }
+
+    // deleteBounty cleans state and removes it from the list of bounties
+    function deleteBounty(uint number) internal {
+            delete bounties[number];
+            delete bountyAvailable[number];
+    }
+
+    // validateBounty returns if a bounty is still valid and available. If it notices
+    // expiration it will delete it and refund the bounty back to the creator of
+    // the bounty.
+    function validateBounty(uint number) internal returns (bool) {
+        if( !bountyAvailable[number] ) {
+            return false;
+        }
+
+        Bounty bounty = bounties[number];
+        // check if a bounty is expired and not in progress. When a bounty is in progress
+        // we consider it to be valid and it won't be deleted.
+        if( bounty.validTill != 0 && bounty.validTill < block.timestamp && !bounty.claim.inProgress ) {
+            // refund the bounty and delete it
+            refundBounty(bounty);
+            deleteBounty(number);
+
+            DeletedBounty(number);
+
+            return false;
+        }
+
+        return true;
+    }
     
+    function failAndResend() {
+        if( msg.value > 0 ) msg.sender.send( msg.value );
+    }
+
     // submitBounty creates a new bounty with the number as identifier
     // whenever a bounty already exists add the bounty value to the existing
     // bounty.
-    function submitBounty(uint number) {
-        // bounty exists, add value
-        if( bountyAvailable[number] ) {
-            uint nval = bounties[number].value + msg.value;
-            bounties[number].value = nval;
-            
-            ChangedBounty(number, msg.sender, nval);
-        } else {
-            // bounty does not exist, create new bounty
+    function submitBounty(uint number, uint validTill) {
+        // bounty does not exist, create new bounty
+        if( !validateBounty(number) ) {
             if( msg.value > 0 ) {
                 Bounty bounty;
+                bounty.validTill = validTill;
                 bounty.creator = msg.sender;
                 bounty.value = msg.value;
 
                 bounties[number] = bounty;
                 bountyAvailable[number] = true;
                 
-                NewBounty(number, msg.sender, msg.value);
+                NewBounty(number, msg.sender, validTill, msg.value);
             }
+        } else { // dup bounties not permitted
+            failAndResend();
         }
     }
     
@@ -91,7 +137,7 @@ contract Tracker {
     
     // claimBounty claims the bounty and requires deposit to avoid spam
     function claimBounty(uint number) {
-        if( bountyAvailable[number] && msg.value >= 10 ether) {
+        if( validateBounty(number) && msg.value >= 10 ether) {
             Bounty bounty = bounties[number];
             if( bounty.claim.inProgress ) {
                 // throw doesn't work now. just send back the deposit
@@ -105,6 +151,8 @@ contract Tracker {
             bounties[number] = bounty;
             
             ClaimBounty(number, msg.sender);
+        } else {
+            failAndResend();
         }
     }
     
@@ -133,10 +181,9 @@ contract Tracker {
             return;
         }
 
-        // getting a Solidity error here
-        //for(var j = 0; j < bounty.claim.reviewers.length; j++) {
-         //   if( address(bounty.claim.reviewers[i]) == msg.sender ) return;
-        //}
+        for(var j = 0; j < bounty.claim.reviewers.length; j++) {
+            if( bounty.claim.reviewers[j] == msg.sender ) return;
+        }
         
         bounty.claim.reviewers[bounty.claim.ri] = msg.sender;
         bounty.claim.ri++;
@@ -150,7 +197,7 @@ contract Tracker {
                 bounty.claim.reviewers[i].send(rcut);
             }
             
-            delete bounties[number];
+            deleteBounty(number);
             
             ClaimSuccess(number, bounty.claim.owner, bounty.value);
         }

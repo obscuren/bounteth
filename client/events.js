@@ -27,7 +27,11 @@ Template.body.events({
                 return;
             }
 
-            BountyProgram.submitBounty.sendTransaction(event.target.issueNumber.value, {from:web3.eth.accounts[0], value: event.target.amount.value, gas: 1500000});
+            BountyProgram.submitBounty.sendTransaction(event.target.issueNumber.value, event.target.validTill.value, {
+                from:web3.eth.accounts[0],
+                value: event.target.amount.value,
+                gas: 1500000
+            });
         });
     },
 
