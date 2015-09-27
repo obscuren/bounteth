@@ -18,7 +18,6 @@ Template.body.events({
 
         validateIssueNumber(event.target.issueNumber.value, function(validIssue, error, res) {
             if( !validIssue ) {
-                // show error message
                 GlobalNotification.info({
                     title: 'Bounty error',
                     content: error.message,
@@ -32,6 +31,15 @@ Template.body.events({
                 value: event.target.amount.value,
                 gas: 1500000
             });
+
+            GlobalNotification.info({
+                title: 'Bounty',
+                content: "Bounty successfully created",
+                duration: 5
+            });
+            event.target.issueNumber.value = "";
+            event.target.validTill.value = "";
+            event.target.amount.value = "";
         });
     },
 
@@ -51,5 +59,11 @@ Template.body.events({
         event.preventDefault();
 
         BountyProgram.addReviewer.sendTransaction(event.target.address.value, {from:web3.eth.accounts[0], gas: 1500000});
+    },
+
+    "submit .reclaim-bounty": function(event) {
+        event.preventDefault();
+
+        BountyProgram.reclaimBounty.sendTransaction(event.target.issueNumber.value, {from:web3.eth.accounts[0], gas:100000});
     },
 });

@@ -2,7 +2,7 @@ Bounties = new Mongo.Collection("bounties", {connection: null});
 Bounties.remove({});
 new PersistentMinimongo(Bounties, "ethereum_bounties-dapp");
 
-contractAddress = "0x0724096a7ea283ec0256a7aa5b7537899a0a68fe";
+contractAddress = "0x5663816885aa81e80a532ddba77910244b1574d6";
 BountyProgram = TrackerContract.at(contractAddress);
 
 Meteor.startup(function() {

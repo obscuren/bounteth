@@ -22,7 +22,7 @@
       <form class="new-bounty">
           <label>Submit bounty</label>
           <input type="text" name="issueNumber" placeholder="issue number">
-          <input type="text" name="validTill" placeholder="valid till (0 = no expire time)">
+          <input type="text" name="validTill" placeholder="valid till (0 = no expire time)" value={{defaultTime}}>
           <input type="text" name="amount" placeholder="1234">
           <input type="submit" value="Submit" style="width:100px">
       </form>
@@ -85,6 +85,13 @@
       <form class="add-reviewer">
           <label>Add reviewer</label>
           <input type="text" name="address">
+          (can only be done by <strong>{{operator}}</strong>)
+          <input type="submit" value="Submit" style="width: 100px">
+      </form>
+
+      <form class="reclaim-bounty">
+          <label>Reclaim bounty</label>
+          <input type="text" name="issueNumber">
           (can only be done by <strong>{{operator}}</strong>)
           <input type="submit" value="Submit" style="width: 100px">
       </form>

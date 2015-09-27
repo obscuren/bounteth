@@ -17,4 +17,8 @@ Template.body.helpers({
     operator: function() {
         return BountyProgram.operator.call();
     },
+    defaultTime: function() {
+        var day = 86400;
+        return Math.floor((new Date()).getTime()/1000) + day;
+    },
 });
