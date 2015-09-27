@@ -8,6 +8,7 @@ Template.body.helpers({
         return web3.fromWei(web3.eth.getBalance(contractAddress), "ether");
     },
     bounties: function() {
+        console.log(Bounties.find({ status: "open" }))
         return Bounties.find({ status: "open" });
     },
     closedBounties: function() {
@@ -15,6 +16,12 @@ Template.body.helpers({
     },
     accounts: function() {
         return web3.eth.accounts;
+        var accounts = [];
+        var addresses = web3.eth.accounts;
+        for(var i = 0; i < addresses.length; i++) {
+            accounts[i] = {name: /*todo*/addresses[i], address: addresses[i]};
+        }
+        return addresses;
     },
     operator: function() {
         return BountyProgram.operator.call();

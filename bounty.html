@@ -38,6 +38,11 @@
 
       <form class="review-claim">
           <label>Review claim</label>
+          <select name="address">
+              {{#each accounts}}
+                {{> account}}
+              {{/each}}
+          </select>
           <input type="text" name="issueNumber" placeholder="issue number">
           <select name="approve">
               <option value="1">Approve</option>
@@ -99,6 +104,10 @@
       </form>
 </body>
 
+<template name="account">
+    <option value={{this}}>{{this}}</option>
+</template>
+
 <template name="bounty">
 <tr>
     <td>{{id}}</td>
@@ -110,6 +119,3 @@
 </tr>
 </template>
 
-<template name="account">
-    <option value="{{account}}">{{account}}</option>
-</template>
