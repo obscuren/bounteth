@@ -80,6 +80,22 @@ contract Tracker {
             delete bountyAvailable[number];
     }
 
+    // reclaimBounty deletes the bounty and returns funds to submitters. This
+    // introduces centralisation and pof thru the operator.
+    function reclaimBounty(uint number) {
+        if( operator != msg.sender || !bountyAvailable[number] ) return;
+
+        Bounty bounty = bounties[number];
+        if( bounty.claim.inProgress ) {
+            bounty.claim.owner.send(bounty.claim.deposit);
+            ClaimDelete(number);
+        }
+        bounty.creator.send(bounty.value);
+
+        deleteBounty(number);
+        DeletedBounty(number);
+    }
+
     // validateBounty returns if a bounty is still valid and available. If it notices
     // expiration it will delete it and refund the bounty back to the creator of
     // the bounty.
@@ -115,7 +131,7 @@ contract Tracker {
         // bounty does not exist, create new bounty
         if( !validateBounty(number) ) {
             if( msg.value > 0 ) {
-                Bounty bounty;
+                Bounty memory bounty;
                 bounty.validTill = validTill;
                 bounty.creator = msg.sender;
                 bounty.value = msg.value;
@@ -170,9 +186,13 @@ contract Tracker {
         
         Bounty bounty = bounties[number];
         if( !bounty.claim.inProgress ) return;
+
+        // prevent double voting
+        for(var j = 0; j < bounty.claim.reviewers.length; j++) {
+            if( bounty.claim.reviewers[j] == msg.sender ) return;
+        }
         
         Review(number, msg.sender, approve>0);
-        
         if( approve == 0 ) {
             bounty.claim.owner.send(bounty.claim.deposit);
             resetClaimState(number, bounty);
@@ -181,10 +201,6 @@ contract Tracker {
             return;
         }
 
-        for(var j = 0; j < bounty.claim.reviewers.length; j++) {
-            if( bounty.claim.reviewers[j] == msg.sender ) return;
-        }
-        
         bounty.claim.reviewers[bounty.claim.ri] = msg.sender;
         bounty.claim.ri++;
         if(bounty.claim.ri == 2) {
