@@ -239,5 +239,9 @@ contract Tracker {
         
         ClaimDelete(number);
     }
+
+    function kill() {
+        if( msg.sender == operator ) suicide(operator);
+    }
 }
 //10 ether = 10000000000000000000
