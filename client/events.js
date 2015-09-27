@@ -18,27 +18,25 @@ Template.body.events({
 
         validateIssueNumber(event.target.issueNumber.value, function(validIssue, error, res) {
             if( !validIssue ) {
-                GlobalNotification.info({
-                    title: 'Bounty error',
+                GlobalNotification.error({
                     content: error.message,
-                    duration: 2
+                    duration: 5
                 });
-                return;
+            } else {
+                BountyProgram.submitBounty.sendTransaction(event.target.issueNumber.value, event.target.validTill.value, {
+                    from:web3.eth.accounts[0],
+                    value: event.target.amount.value,
+                    gas: 1500000
+                });
+
+                GlobalNotification.success({
+                    content: "Bounty successfully created",
+                    duration: 5
+                });
             }
 
-            BountyProgram.submitBounty.sendTransaction(event.target.issueNumber.value, event.target.validTill.value, {
-                from:web3.eth.accounts[0],
-                value: event.target.amount.value,
-                gas: 1500000
-            });
-
-            GlobalNotification.info({
-                title: 'Bounty',
-                content: "Bounty successfully created",
-                duration: 5
-            });
             event.target.issueNumber.value = "";
-            event.target.validTill.value = "";
+            event.target.validTill.value = defaultTime();
             event.target.amount.value = "";
         });
     },

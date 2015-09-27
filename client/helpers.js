@@ -1,3 +1,5 @@
+var basePath;
+
 Template.body.helpers({
     bountyAddress: function() {
         return contractAddress;
@@ -17,8 +19,20 @@ Template.body.helpers({
     operator: function() {
         return BountyProgram.operator.call();
     },
-    defaultTime: function() {
-        var day = 86400;
-        return Math.floor((new Date()).getTime()/1000) + day;
+    defaultTime: defaultTime,
+    basePath: function() {
+        if( basePath === undefined ) {
+            basePath = BountyProgram.basePath();
+        }
+        return basePath;
+    },
+});
+
+Template.bounty.helpers({
+    issueUrl: function(issueNumber) {
+        if( basePath === undefined ) {
+            basePath = BountyProgram.basePath();
+        }
+        return "https://github.com/"+basePath+"/issues/"+issueNumber;
     },
 });

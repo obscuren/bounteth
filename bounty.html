@@ -8,11 +8,13 @@
       <table style="text-align: left">
           <tr>
               <th>DApp location</th>
+              <th>Operator</th>
               <th>Contract balance</th>
           </tr>
 
           <tr>
-              <td>{{bountyAddress}}</td>
+              <td><code>{{bountyAddress}}</code></td>
+              <td><code>{{operator}}</code></td>
               <td>{{bountyBalance}}</td>
           </tr>
        </table>
@@ -85,14 +87,14 @@
       <form class="add-reviewer">
           <label>Add reviewer</label>
           <input type="text" name="address">
-          (can only be done by <strong>{{operator}}</strong>)
+          (can only be done by the <strong>operator</strong>)
           <input type="submit" value="Submit" style="width: 100px">
       </form>
 
       <form class="reclaim-bounty">
           <label>Reclaim bounty</label>
           <input type="text" name="issueNumber">
-          (can only be done by <strong>{{operator}}</strong>)
+          (can only be done by the <strong>operator</strong>)
           <input type="submit" value="Submit" style="width: 100px">
       </form>
 </body>
@@ -100,7 +102,7 @@
 <template name="bounty">
 <tr>
     <td>{{id}}</td>
-    <td><a href="https://github.com/ethereum/go-ethereum/issues/{{id}}">{{title}}</a></td>
+    <td><a href="{{issueUrl id}}">{{title}}</a></td>
     <td>{{bounty.amount}} wei</td>
     <td>{{bounty.validTill}}</td>
     <td>{{claimer}}</td>

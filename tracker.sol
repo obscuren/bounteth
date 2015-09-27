@@ -1,5 +1,6 @@
 contract Tracker {
     address public operator;
+    string public basePath;
     mapping(uint => Bounty) bounties;
     mapping(uint => bool) public bountyAvailable;
     mapping(address => bool) public isReviewer;
@@ -64,6 +65,7 @@ contract Tracker {
     // Bounty tracker constructor
     function Tracker() {
         operator = msg.sender;
+        basePath = "ethereum/go-ethereum";
         // hardcoded temp values
         isReviewer[0x9df9878ae7b4f5133efea173733d16fc6ea5dde3] = true;
         isReviewer[0xc3fac3cc4feed25b6b4b258cdd57c5ce208d34dc] = true;
