@@ -1,5 +1,13 @@
 var basePath;
 
+function formatTime(time) {
+    var t = new BigNumber(0);
+    t.c = time.c;
+    t.e = time.e;
+    t.s = time.s;
+    return new Date(t.toNumber()*1000);
+}
+
 Template.body.helpers({
     bountyAddress: function() {
         return contractAddress;
@@ -42,4 +50,6 @@ Template.bounty.helpers({
         }
         return "https://github.com/"+basePath+"/issues/"+issueNumber;
     },
+
+    formatTime: formatTime,
 });

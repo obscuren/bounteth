@@ -24,7 +24,7 @@ Template.body.events({
                 });
             } else {
                 BountyProgram.submitBounty.sendTransaction(event.target.issueNumber.value, event.target.validTill.value, {
-                    from:web3.eth.accounts[0],
+                    from:event.target.address.value,
                     value: event.target.amount.value,
                     gas: 1500000
                 });
@@ -43,7 +43,7 @@ Template.body.events({
 
         GlobalNotification.success({content: "Bounty claim submitted", duration: 5});
 
-        BountyProgram.claimBounty.sendTransaction(event.target.issueNumber.value, {from:web3.eth.accounts[0], value: web3.toWei(10, "ether"), gas: 1500000});
+        BountyProgram.claimBounty.sendTransaction(event.target.issueNumber.value, {from:event.target.address.value, value: web3.toWei(10, "ether"), gas: 1500000});
     },
 
     "submit .review-claim": function(event) {
@@ -57,12 +57,12 @@ Template.body.events({
         event.preventDefault();
 
         GlobalNotification.info({content: "Added reviewer", duration: 5});
-        BountyProgram.addReviewer.sendTransaction(event.target.address.value, {from:web3.eth.accounts[0], gas: 1500000});
+        BountyProgram.addReviewer.sendTransaction(event.target.address.value, {from:event.target.address.value, gas: 1500000});
     },
 
     "submit .reclaim-bounty": function(event) {
         event.preventDefault();
 
-        BountyProgram.reclaimBounty.sendTransaction(event.target.issueNumber.value, {from:web3.eth.accounts[0], gas:100000});
+        BountyProgram.reclaimBounty.sendTransaction(event.target.issueNumber.value, {from:event.target.address.value, gas:100000});
     },
 });
