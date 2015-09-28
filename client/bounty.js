@@ -8,7 +8,7 @@ BountyProgram = TrackerContract.at(contractAddress);
 
 Meteor.startup(function() {
     var lastBlock = localStorage["lastSeenBlock"];
-    if( lastBlock === undefined ) lastBlock = 0;
+    if( lastBlock === undefined ) lastBlock = 250000;
 
     var newBountyFilter = BountyProgram.NewBounty({}, {fromBlock: lastBlock, toBlock: "latest"});
     newBountyFilter.watch(function(error, res) {

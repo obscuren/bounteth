@@ -18,18 +18,20 @@ Template.body.events({
 
         validateIssueNumber(event.target.issueNumber.value, function(validIssue, error, res) {
             if( !validIssue ) {
-                GlobalNotification.error({
-                    content: error.message,
-                    duration: 5
-                });
+                GlobalNotification.error({content: error.message, duration: 5});
             } else {
                 BountyProgram.submitBounty.sendTransaction(event.target.issueNumber.value, event.target.validTill.value, {
                     from:event.target.address.value,
                     value: event.target.amount.value,
                     gas: 1500000
+                }, function(err) {
+                    if( err ) {
+                        GlobalNotification.error({content: err.message, duration: 5});
+                    } else {
+                        GlobalNotification.success({content: "Bounty successfully created", duration: 5});
+                    }
                 });
 
-                GlobalNotification.success({content: "Bounty successfully created", duration: 5});
             }
 
             event.target.issueNumber.value = "";
@@ -41,28 +43,48 @@ Template.body.events({
     "submit .claim-bounty": function(event) {
         event.preventDefault();
 
-        GlobalNotification.success({content: "Bounty claim submitted", duration: 5});
-
-        BountyProgram.claimBounty.sendTransaction(event.target.issueNumber.value, {from:event.target.address.value, value: web3.toWei(10, "ether"), gas: 1500000});
+        BountyProgram.claimBounty.sendTransaction(event.target.issueNumber.value, {from:event.target.address.value, value: web3.toWei(10, "ether"), gas: 1500000}, function(err) {
+            if( err ) {
+                GlobalNotification.error({content: err.message, duration: 5});
+            } else {
+                GlobalNotification.success({content: "Bounty claim submitted", duration: 5});
+            }
+        });
     },
 
     "submit .review-claim": function(event) {
         event.preventDefault();
 
-        GlobalNotification.success({content: "Reviewed claim", duration: 5});
-        BountyProgram.reviewClaim.sendTransaction(event.target.issueNumber.value, event.target.approve.value, {from:event.target.address.value, gas: 1500000});
+        BountyProgram.reviewClaim.sendTransaction(event.target.issueNumber.value, event.target.approve.value, {from:event.target.address.value, gas: 1500000}, function(err) {
+            if( err ) {
+                GlobalNotification.error({content: err.message, duration: 5});
+            } else {
+                GlobalNotification.success({content: "Reviewed claim", duration: 5});
+            }
+        });
     },
 
     "submit .add-reviewer": function(event) {
         event.preventDefault();
 
-        GlobalNotification.info({content: "Added reviewer", duration: 5});
-        BountyProgram.addReviewer.sendTransaction(event.target.address.value, {from:event.target.address.value, gas: 1500000});
+        BountyProgram.addReviewer.sendTransaction(event.target.address.value, {from:event.target.address.value, gas: 1500000}, function(err) {
+            if( err ) {
+                GlobalNotification.error({content: err.message, duration: 5});
+            } else {
+                GlobalNotification.info({content: "Added reviewer", duration: 5});
+            }
+        });
     },
 
     "submit .reclaim-bounty": function(event) {
         event.preventDefault();
 
-        BountyProgram.reclaimBounty.sendTransaction(event.target.issueNumber.value, {from:event.target.address.value, gas:100000});
-    },
+        BountyProgram.reclaimBounty.sendTransaction(event.target.issueNumber.value, {from:event.target.address.value, gas:100000}, function(err) {
+            if( err ) {
+                GlobalNotification.error({content: err.message, duration: 5});
+            } else {
+                GlobalNotification.info({content: "Reclaimed bounty", duration: 5});
+            }
+        });
+    }
 });
